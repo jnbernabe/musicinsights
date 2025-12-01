@@ -18,6 +18,18 @@ def parse_exportify_file(upload_obj: Upload):
         raise ValueError("Unsupported file type. Please upload a CSV exported from Exportify.")
 
 
+def _safe_int(value):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return None
+
+def _safe_float(value):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
 def _parse_csv(upload_obj: Upload):
     """
     Parse an Exportify CSV like the one you sent.
@@ -38,8 +50,13 @@ def _parse_csv(upload_obj: Upload):
     raw_name = upload_obj.original_file.name
     playlist_name = raw_name.rsplit('/', 1)[-1].rsplit('\\', 1)[-1].rsplit('.', 1)[0]
 
-    # open as text
-    decoded = upload_obj.original_file.read().decode('utf-8')
+    # open as text with fallback encoding
+    content = upload_obj.original_file.read()
+    try:
+        decoded = content.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        decoded = content.decode('latin-1')
+        
     reader = csv.DictReader(decoded.splitlines())
 
     for row in reader:
@@ -87,18 +104,18 @@ def _parse_csv(upload_obj: Upload):
             spotify_id=spotify_id,
             defaults={
                 'name': track_name,
-                'duration_ms': int(duration_ms) if duration_ms else None,
+                'duration_ms': _safe_int(duration_ms),
                 'album': album_obj,
                 'genres': genres,
-                'danceability': float(danceability) if danceability else None,
-                'energy': float(energy) if energy else None,
-                'valence': float(valence) if valence else None,
-                'acousticness': float(acousticness) if acousticness else None,
-                'instrumentalness': float(instrumentalness) if instrumentalness else None,
-                'liveness': float(liveness) if liveness else None,
-                'speechiness': float(speechiness) if speechiness else None,
-                'tempo': float(tempo) if tempo else None,
-                'popularity': int(popularity) if popularity else None,
+                'danceability': _safe_float(danceability),
+                'energy': _safe_float(energy),
+                'valence': _safe_float(valence),
+                'acousticness': _safe_float(acousticness),
+                'instrumentalness': _safe_float(instrumentalness),
+                'liveness': _safe_float(liveness),
+                'speechiness': _safe_float(speechiness),
+                'tempo': _safe_float(tempo),
+                'popularity': _safe_int(popularity),
                 'release_date': release_date
             }
         )
@@ -116,17 +133,17 @@ def _parse_csv(upload_obj: Upload):
             changed = True
         
         # Update audio features if they exist in CSV but not in DB (or changed)
-        if danceability and track_obj.danceability != float(danceability):
-            track_obj.danceability = float(danceability)
+        if danceability and track_obj.danceability != _safe_float(danceability):
+            track_obj.danceability = _safe_float(danceability)
             changed = True
-        if energy and track_obj.energy != float(energy):
-            track_obj.energy = float(energy)
+        if energy and track_obj.energy != _safe_float(energy):
+            track_obj.energy = _safe_float(energy)
             changed = True
-        if valence and track_obj.valence != float(valence):
-            track_obj.valence = float(valence)
+        if valence and track_obj.valence != _safe_float(valence):
+            track_obj.valence = _safe_float(valence)
             changed = True
-        if popularity and track_obj.popularity != int(popularity):
-            track_obj.popularity = int(popularity)
+        if popularity and track_obj.popularity != _safe_int(popularity):
+            track_obj.popularity = _safe_int(popularity)
             changed = True
             
         if changed:

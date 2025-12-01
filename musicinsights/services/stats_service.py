@@ -63,9 +63,13 @@ def build_dashboard_context(upload):
             avg_features.append(0)
 
     # Convert total listening time to hours
-    total_listening_hours = round(total_listening_time_ms / (1000 * 60 * 60), 2)
+    total_listening_hours = round(total_listening_time_ms / (1000 * 60 * 60), 3)
+
+    first_entry = entries.first()
+    playlist_name = first_entry.playlist_name if first_entry else "Unknown Playlist"
 
     return {
+        "playlist_name": playlist_name,
         "total_tracks": total_tracks,
         "total_listening_hours": total_listening_hours,
         "top_artists": artist_counter.most_common(10),

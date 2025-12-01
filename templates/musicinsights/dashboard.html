@@ -3,9 +3,9 @@
 
 <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
   <div>
-    <h2>Dashboard</h2>
-    <p class="text-secondary">Total tracks: <strong>{{ total_tracks }}</strong> | Listening time: <strong>{{
-        total_listening_hours }}h</strong></p>
+    <h2>Dashboard - {{ playlist_name }}</h2>
+    <p class="text-secondary">Total tracks: <strong>{{ total_tracks }}</strong> | Total Duration: <strong>{{
+        total_listening_hours }} hours</strong></p>
   </div>
   <a href="{% url 'upload_file' %}" class="btn">Upload New CSV</a>
 </div>
@@ -25,12 +25,12 @@
 
   <!-- Listening Time per Month -->
   <div class="card full-width">
-    <h3>Listening Time per Month (hours)</h3>
+    <h3>Duration Added per Month (Hours)</h3>
     <canvas id="monthlyChart"></canvas>
   </div>
 
   <!-- Audio Features and Top Genres side by side -->
-  <div class="card">
+  <div class="card ">
     <h3>Audio Features Profile</h3>
     <canvas id="featuresChart"></canvas>
   </div>
@@ -43,47 +43,49 @@
   <!-- Top Artists -->
   <div class="card">
     <h3>Top Artists</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Artist</th>
-          <th>Tracks</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for name, count in top_artists %}
-        <tr>
-          <td>{{ name }}</td>
-          <td>{{ count }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Artist</th>
+            <th>Tracks</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for name, count in top_artists %}
+          <tr>
+            <td>{{ name }}</td>
+            <td>{{ count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Top Tracks by Listening Time -->
-  <div class="card">
-    <h3>Top Tracks by Listening Time</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Track</th>
-          <th>Artist</th>
-          <th>Album</th>
-          <th>Hours</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for t in top_tracks %}
-        <tr>
-          <td>{{ t.name }}</td>
-          <td>{{ t.artist }}</td>
-          <td>{{ t.album }}</td>
-          <td>{{ t.listening_time_hours }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="card full-width">
+    <h3>Top Tracks by Duration</h3>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Track</th>
+            <th>Artist</th>
+            <th>Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in top_tracks %}
+          <tr>
+            <td>{{ t.name }}</td>
+            <td>{{ t.artist }}</td>
+            <td>{{ t.listening_time_hours }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

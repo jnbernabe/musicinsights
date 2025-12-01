@@ -36,3 +36,17 @@ class RecommendationServiceTest(TestCase):
             
         recs = build_recommendations(self.upload)
         self.assertTrue(any("morning" in r for r in recs))
+
+    def test_tempo_recommendation(self):
+        # Add high tempo tracks
+        for i in range(5):
+            t = Track.objects.create(name=f"Fast Song {i}", spotify_id=f"fs{i}", tempo=150)
+            PlaylistEntry.objects.create(
+                upload=self.upload,
+                track=t,
+                playlist_name="Workout",
+                added_at=datetime(2023, 1, 1, 12, 0, 0)
+            )
+            
+        recs = build_recommendations(self.upload)
+        self.assertTrue(any("High Tempo" in r for r in recs))

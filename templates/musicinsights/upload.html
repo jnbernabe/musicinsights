@@ -2,15 +2,21 @@
 
 {% block content %}
 <div class="card" style="max-width: 600px; margin: 0 auto; text-align: center;">
-  <h2>Upload your Exportify CSV</h2>
-  <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-    Export your playlists from <a href="https://exportify.net/" target="_blank">Exportify</a> and drop the CSV here.
-  </p>
+    <h2>Upload your Exportify CSV</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Export your playlists from <a href="https://exportify.net/" target="_blank">Exportify</a> and drop the CSV here.
+    </p>
 
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file" name="file" accept=".csv" required>
-    <button type="submit" class="btn">Analyze</button>
-  </form>
+    {% if error %}
+    <div style="background-color: #ff4444; color: white; padding: 10px; border-radius: 4px; margin-bottom: 1rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit" class="btn">Analyze</button>
+    </form>
 </div>
 {% endblock %}

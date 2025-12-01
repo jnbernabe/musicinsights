@@ -71,6 +71,12 @@ def build_recommendations(upload):
         recs.append("⚡ Your library is high-energy! Balance it out with some mellow tracks for variety.")
     elif high_energy_tracks < track_count * 0.3:
         recs.append("😌 You prefer chill vibes. Add some upbeat tracks for when you need a boost.")
+
+    # Tempo-based recommendation
+    total_tempo = sum(e.track.tempo for e in entries if e.track.tempo)
+    avg_tempo = total_tempo / track_count if track_count > 0 else 0
+    if avg_tempo > 120:
+        recs.append("🏃‍♂️ High Tempo! Great for workouts.")
     
     # Fallback if no recommendations
     if not recs:
