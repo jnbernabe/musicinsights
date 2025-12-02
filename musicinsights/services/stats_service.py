@@ -1,5 +1,6 @@
 from collections import Counter
 import json
+from datetime import datetime
 from ..models import PlaylistEntry
 
 def build_dashboard_context(upload):
@@ -7,8 +8,96 @@ def build_dashboard_context(upload):
     total_tracks = entries.count()
 
     artist_counter = Counter()
-    track_listening_time = Counter()  # Changed to track listening time
-    monthly_listening_time = Counter()  # Changed to listening time
+    track_listening_time = Counter()
+    monthly_listening_time = Counter()
+
+    # --- Audio Features Averages ---
+    features = ['danceability', 'energy', 'valence', 'acousticness', 'instrumentalness', 'liveness', 'speechiness']
+    feature_totals = {f: 0.0 for f in features}
+    feature_counts = {f: 0 for f in features}
+    
+    # --- Genre Counting ---
+    genre_counter = Counter()
+
+    # Total listening time
+    total_listening_time_ms = 0
+
+    # --- New Metrics Initialization ---
+    time_of_day_counts = {'Morning': 0, 'Afternoon': 0, 'Evening': 0, 'Night': 0}
+    era_counts = Counter()
+    popularity_counts = { '0-20': 0, '21-40': 0, '41-60': 0, '61-80': 0, '81-100': 0 }
+    tempo_counts = { '<80 BPM': 0, '80-100 BPM': 0, '100-120 BPM': 0, '120-140 BPM': 0, '>140 BPM': 0 }
+
+    for e in entries:
+        track = e.track
+        duration_ms = track.duration_ms or 0
+        
+        for artist in track.artists.all():
+            artist_counter[artist.name] += 1
+
+        # Count by track object and accumulate listening time
+        track_listening_time[track] += duration_ms
+        
+        total_listening_time_ms += duration_ms
+
+        if e.added_at:
+            key = e.added_at.strftime('%Y-%m')
+            monthly_listening_time[key] += duration_ms
+            
+            # Time of Day
+            h = e.added_at.hour
+            if 5 <= h <= 11: time_of_day_counts['Morning'] += 1
+            elif 12 <= h <= 17: time_of_day_counts['Afternoon'] += 1
+            elif 18 <= h <= 23: time_of_day_counts['Evening'] += 1
+            else: time_of_day_counts['Night'] += 1
+
+        # Music Era
+        if track.release_date:
+            try:
+                year = int(track.release_date[:4])
+                decade = f"{(year // 10) * 10}s"
+                era_counts[decade] += 1
+            except (ValueError, TypeError):
+                pass
+
+        # Popularity
+        if track.popularity is not None:
+            pop = track.popularity
+            if pop <= 20: popularity_counts['0-20'] += 1
+            elif pop <= 40: popularity_counts['21-40'] += 1
+            elif pop <= 60: popularity_counts['41-60'] += 1
+            elif pop <= 80: popularity_counts['61-80'] += 1
+            else: popularity_counts['81-100'] += 1
+
+        # Tempo
+        if track.tempo:
+            bpm = track.tempo
+            if bpm < 80: tempo_counts['<80 BPM'] += 1
+            elif bpm < 100: tempo_counts['80-100 BPM'] += 1
+            elif bpm < 120: tempo_counts['100-120 BPM'] += 1
+            elif bpm < 140: tempo_counts['120-140 BPM'] += 1
+            else: tempo_counts['>140 BPM'] += 1
+            
+        # Audio features
+        for f in features:
+            val = getattr(track, f, None)
+            if val is not None:
+                feature_totals[f] += val
+                feature_counts[f] += 1
+        
+        # Genres (comma separated in DB)
+from collections import Counter
+import json
+from datetime import datetime
+from ..models import PlaylistEntry
+
+def build_dashboard_context(upload):
+    entries = PlaylistEntry.objects.filter(upload=upload).select_related('track', 'track__album')
+    total_tracks = entries.count()
+
+    artist_counter = Counter()
+    track_listening_time = Counter()
+    monthly_listening_time = Counter()
 
     # --- Audio Features Averages ---
     features = ['danceability', 'energy', 'valence', 'acousticness', 'instrumentalness', 'liveness', 'speechiness']
@@ -91,9 +180,17 @@ def build_dashboard_context(upload):
                 if g_clean:
                     genre_counter[g_clean] += 1
 
-    monthly_labels = sorted(monthly_listening_time.keys())
-    # Convert milliseconds to hours for display
-    monthly_values = [round(monthly_listening_time[m] / (1000 * 60 * 60), 2) for m in monthly_labels]
+    # --- Top Artists by Duration ---
+    artist_duration = Counter()
+    for track, duration_ms in track_listening_time.items():
+        for artist in track.artists.all():
+            artist_duration[artist.name] += duration_ms
+
+    # Get top 10 artists by duration
+    top_artists_duration = artist_duration.most_common(10)
+    top_artists_duration_labels = [a[0] for a in top_artists_duration]
+    # Convert to hours
+    top_artists_duration_values = [round(a[1] / (1000 * 60 * 60), 2) for a in top_artists_duration]
 
     # Calculate averages
     avg_features = []
@@ -127,8 +224,10 @@ def build_dashboard_context(upload):
             }
             for t, time_ms in track_listening_time.most_common(10)
         ],
-        "monthly_labels": json.dumps(monthly_labels),
-        "monthly_values": json.dumps(monthly_values),
+        # Replaced Monthly Data with Top Artists Duration
+        "top_artists_duration_labels": json.dumps(top_artists_duration_labels),
+        "top_artists_duration_values": json.dumps(top_artists_duration_values),
+        
         "avg_features": json.dumps(avg_features),
         "feature_labels": json.dumps([f.capitalize() for f in features]),
         "top_genres": json.dumps(genre_counter.most_common(10)),

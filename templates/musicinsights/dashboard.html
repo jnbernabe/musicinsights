@@ -1,5 +1,4 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
 <!-- Header -->
 <div class="dashboard-header">
@@ -7,37 +6,48 @@
     <h2>{{ playlist_name }}</h2>
     <p>Dashboard Overview</p>
   </div>
-  <a href="{% url 'upload_file' %}" class="btn"><i class="ph ph-upload-simple"></i> Upload New CSV</a>
+  <a href="{% url 'upload_file' %}" class="btn"
+    ><i class="ph ph-upload-simple"></i> Upload New CSV</a
+  >
 </div>
 
 <!-- Bento Grid -->
 <div class="bento-grid">
-
   <!-- Hero Stats -->
   <div class="bento-card col-span-1">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-music-notes card-icon"></i> Tracks</span>
+      <span class="card-title"
+        ><i class="ph ph-music-notes card-icon"></i> Playlist Stats</span
+      >
     </div>
     <div class="stat-value">{{ total_tracks }}</div>
-    <div class="stat-sub">Total songs in library</div>
-  </div>
+    <div class="stat-sub">Total songs in playlist</div>
 
-  <div class="bento-card col-span-1">
-    <div class="card-header">
-      <span class="card-title"><i class="ph ph-clock card-icon"></i> Duration</span>
-    </div>
     <div class="stat-value">{{ total_listening_hours }}</div>
     <div class="stat-sub">Hours of listening time</div>
   </div>
 
-  <div class="bento-card col-span-2">
+  <div class="bento-card col-span-3">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-sparkle card-icon"></i> Insights</span>
+      <span class="card-title"
+        ><i class="ph ph-sparkle card-icon"></i> Insights</span
+      >
     </div>
-    <ul style="list-style: none; padding: 0; margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
+    <ul
+      style="
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 1.3rem;
+      "
+    >
       {% for rec in recommendations %}
-      <li style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-        <i class="ph ph-check-circle" style="color: var(--accent-primary);"></i> {{ rec }}
+      <li
+        style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px"
+      >
+        <i class="ph ph-check-circle" style="color: var(--accent-primary)"></i>
+        {{ rec }}
       </li>
       {% empty %}
       <li>No insights available yet.</li>
@@ -48,7 +58,9 @@
   <!-- Mood Map (Scatter) -->
   <div class="bento-card col-span-3 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-smiley card-icon"></i> Mood Map</span>
+      <span class="card-title"
+        ><i class="ph ph-smiley card-icon"></i> Mood Map</span
+      >
     </div>
     <div id="moodChart" class="chart-container"></div>
   </div>
@@ -56,55 +68,69 @@
   <!-- Top Genres (Sunburst) -->
   <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-chart-pie-slice card-icon"></i> Genres</span>
+      <span class="card-title"
+        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres</span
+      >
     </div>
     <div id="genreChart" class="chart-container"></div>
   </div>
 
-  <!-- Monthly Activity (Line/Bar) -->
-  <div class="bento-card col-span-2">
+  <!-- Top Artists by Duration (Bar) -->
+  <div class="bento-card col-span-2 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-calendar card-icon"></i> Monthly Activity</span>
+      <span class="card-title"
+        ><i class="ph ph-clock card-icon"></i> Top Artists by Duration</span
+      >
     </div>
-    <div id="monthlyChart" class="chart-container"></div>
+    <div id="artistDurationChart" class="chart-container"></div>
   </div>
 
   <!-- Audio Features (Radar) -->
-  <div class="bento-card col-span-2">
+  <div class="bento-card col-span-2 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-faders card-icon"></i> Audio Profile</span>
+      <span class="card-title"
+        ><i class="ph ph-faders card-icon"></i> Audio Profile</span
+      >
     </div>
     <div id="featuresChart" class="chart-container"></div>
   </div>
 
   <!-- Time of Day -->
-  <div class="bento-card col-span-1">
+  <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-sun card-icon"></i> Time of Day</span>
+      <span class="card-title"
+        ><i class="ph ph-sun card-icon"></i> Time of Day</span
+      >
     </div>
     <div id="timeChart" class="chart-container"></div>
   </div>
 
   <!-- Era Distribution -->
-  <div class="bento-card col-span-1">
+  <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-hourglass card-icon"></i> Eras</span>
+      <span class="card-title"
+        ><i class="ph ph-hourglass card-icon"></i> Eras</span
+      >
     </div>
     <div id="eraChart" class="chart-container"></div>
   </div>
 
   <!-- Popularity -->
-  <div class="bento-card col-span-1">
+  <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-trend-up card-icon"></i> Popularity</span>
+      <span class="card-title"
+        ><i class="ph ph-trend-up card-icon"></i> Popularity</span
+      >
     </div>
     <div id="popularityChart" class="chart-container"></div>
   </div>
 
   <!-- Tempo -->
-  <div class="bento-card col-span-1">
+  <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-metronome card-icon"></i> Tempo</span>
+      <span class="card-title"
+        ><i class="ph ph-metronome card-icon"></i> Tempo</span
+      >
     </div>
     <div id="tempoChart" class="chart-container"></div>
   </div>
@@ -112,7 +138,9 @@
   <!-- Top Artists Table -->
   <div class="bento-card col-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-users card-icon"></i> Top Artists</span>
+      <span class="card-title"
+        ><i class="ph ph-users card-icon"></i> Top Artists</span
+      >
     </div>
     <div class="table-container">
       <table>
@@ -125,7 +153,7 @@
         <tbody>
           {% for name, count in top_artists %}
           <tr>
-            <td style="font-weight: 500;">{{ name }}</td>
+            <td style="font-weight: 500">{{ name }}</td>
             <td>{{ count }}</td>
           </tr>
           {% endfor %}
@@ -137,7 +165,9 @@
   <!-- Top Tracks Table -->
   <div class="bento-card col-span-2">
     <div class="card-header">
-      <span class="card-title"><i class="ph ph-playlist card-icon"></i> Top Tracks</span>
+      <span class="card-title"
+        ><i class="ph ph-playlist card-icon"></i> Top Tracks</span
+      >
     </div>
     <div class="table-container">
       <table>
@@ -151,7 +181,7 @@
         <tbody>
           {% for t in top_tracks %}
           <tr>
-            <td style="font-weight: 500;">{{ t.name }}</td>
+            <td style="font-weight: 500">{{ t.name }}</td>
             <td>{{ t.artist }}</td>
             <td>{{ t.listening_time_hours }}</td>
           </tr>
@@ -160,17 +190,34 @@
       </table>
     </div>
   </div>
-
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script type="text/javascript">
   // Initialize ECharts Theme
   const theme = null;
   const bgColor = 'transparent';
-  const textColor = '#a0a0a0';
   const accentColor = '#1DB954';
+  const textColor = '#e0e0e0'; // Brighter text
+  const axisLineColor = '#444';
+
+  const commonTextStyle = {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: 14,
+      color: textColor
+  };
+
+  const axisLabelStyle = {
+      color: textColor,
+      fontSize: 13,
+      fontFamily: 'Inter, sans-serif'
+  };
+
+  const titleStyle = {
+      color: textColor,
+      fontSize: 16,
+      fontWeight: 600,
+      fontFamily: 'Inter, sans-serif'
+  };
 
   // Helper to init chart
   function initChart(id) {
@@ -188,7 +235,7 @@
         text: 'No Data Available',
         left: 'center',
         top: 'center',
-        textStyle: { color: '#555', fontSize: 14, fontWeight: 'normal' }
+        textStyle: { color: '#888', fontSize: 16, fontWeight: 'normal' }
       }
     };
   }
@@ -211,18 +258,22 @@
           borderColor: '#333',
           textStyle: { color: '#fff' }
         },
-        grid: { top: 30, right: 30, bottom: 30, left: 40, containLabel: true },
+        grid: { top: 40, right: 30, bottom: 40, left: 50, containLabel: true },
         xAxis: {
           name: 'Valence (Happy)',
           nameLocation: 'middle',
-          nameGap: 25,
-          splitLine: { lineStyle: { color: '#222' } }
+          nameGap: 30,
+          nameTextStyle: { color: textColor, fontSize: 14 },
+          splitLine: { lineStyle: { color: '#333' } },
+          axisLabel: axisLabelStyle
         },
         yAxis: {
           name: 'Energy',
           nameLocation: 'middle',
-          nameGap: 30,
-          splitLine: { lineStyle: { color: '#222' } }
+          nameGap: 40,
+          nameTextStyle: { color: textColor, fontSize: 14 },
+          splitLine: { lineStyle: { color: '#333' } },
+          axisLabel: axisLabelStyle
         },
         series: [{
           symbolSize: 8,
@@ -260,7 +311,7 @@
           type: 'sunburst',
           data: genreData,
           radius: [0, '90%'],
-          label: { rotate: 'radial', color: '#fff' },
+          label: { rotate: 'radial', color: '#fff', fontSize: 12, fontWeight: 'bold' },
           itemStyle: {
             borderRadius: 4,
             borderWidth: 1,
@@ -272,36 +323,45 @@
     }
   }
 
-  // --- Monthly Activity (Bar) ---
-  const monthlyChart = initChart('monthlyChart');
-  const monthlyLabels = {{ monthly_labels| safe }};
-  const monthlyValues = {{ monthly_values| safe }};
-  if (!monthlyLabels || monthlyLabels.length === 0) {
-    if (monthlyChart) monthlyChart.setOption(getNoDataOption());
+  // --- Top Artists by Duration (Bar) ---
+  const artistDurationChart = initChart('artistDurationChart');
+  const artistDurationLabels = {{ top_artists_duration_labels| safe }};
+  const artistDurationValues = {{ top_artists_duration_values| safe }};
+  if (!artistDurationLabels || artistDurationLabels.length === 0) {
+    if (artistDurationChart) artistDurationChart.setOption(getNoDataOption());
   } else {
-    if (monthlyChart) {
-      monthlyChart.setOption({
+    if (artistDurationChart) {
+      artistDurationChart.setOption({
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis' },
-        grid: { top: 20, right: 20, bottom: 20, left: 40, containLabel: true },
+        grid: { top: 20, right: 30, bottom: 20, left: 120, containLabel: true },
         xAxis: {
-          type: 'category',
-          data: monthlyLabels,
-          axisLine: { lineStyle: { color: '#333' } }
+          type: 'value',
+          splitLine: { lineStyle: { color: '#333' } },
+          axisLabel: axisLabelStyle
         },
         yAxis: {
-          type: 'value',
-          splitLine: { lineStyle: { color: '#222' } }
+          type: 'category',
+          data: artistDurationLabels.reverse(),
+          axisLine: { lineStyle: { color: '#444' } },
+          axisLabel: {
+            color: textColor,
+            fontSize: 13,
+            fontFamily: 'Inter, sans-serif',
+            interval: 0,
+            width: 110,
+            overflow: 'truncate'
+          }
         },
         series: [{
-          data: monthlyValues,
+          data: artistDurationValues.reverse(),
           type: 'bar',
           itemStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [
               { offset: 0, color: '#1DB954' },
               { offset: 1, color: 'rgba(29, 185, 84, 0.1)' }
             ]),
-            borderRadius: [4, 4, 0, 0]
+            borderRadius: [0, 4, 4, 0]
           }
         }]
       });
@@ -324,7 +384,8 @@
           indicator: featureLabels.map(f => ({ name: f, max: 1 })),
           splitArea: { areaStyle: { color: ['transparent'] } },
           splitLine: { lineStyle: { color: '#333' } },
-          axisLine: { lineStyle: { color: '#333' } }
+          axisLine: { lineStyle: { color: '#333' } },
+          axisName: { color: textColor, fontSize: 13 }
         },
         series: [{
           type: 'radar',
@@ -386,8 +447,8 @@
       eraChart.setOption({
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis' },
-        grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
-        xAxis: { type: 'category', data: eraLabels },
+        grid: { top: 10, right: 10, bottom: 30, left: 10, containLabel: true },
+        xAxis: { type: 'category', data: eraLabels, axisLabel: axisLabelStyle },
         yAxis: { type: 'value', show: false },
         series: [{
           data: eraValues,
@@ -409,8 +470,8 @@
       popularityChart.setOption({
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis' },
-        grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
-        xAxis: { type: 'category', data: popLabels },
+        grid: { top: 10, right: 10, bottom: 30, left: 10, containLabel: true },
+        xAxis: { type: 'category', data: popLabels, axisLabel: axisLabelStyle },
         yAxis: { type: 'value', show: false },
         series: [{
           data: popValues,
@@ -432,8 +493,8 @@
       tempoChart.setOption({
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis' },
-        grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
-        xAxis: { type: 'category', data: tempoLabels },
+        grid: { top: 10, right: 10, bottom: 30, left: 10, containLabel: true },
+        xAxis: { type: 'category', data: tempoLabels, axisLabel: axisLabelStyle },
         yAxis: { type: 'value', show: false },
         series: [{
           data: tempoValues,
@@ -443,6 +504,5 @@
       });
     }
   }
-
 </script>
 {% endblock %}
