@@ -162,10 +162,12 @@
   </div>
 
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script type="text/javascript">
   // Initialize ECharts Theme
-  const theme = 'dark';
+  const theme = null;
   const bgColor = 'transparent';
   const textColor = '#a0a0a0';
   const accentColor = '#1DB954';
@@ -195,75 +197,79 @@
   const moodChart = initChart('moodChart');
   const moodData = {{ mood_data| safe }};
   if (!moodData || moodData.length === 0) {
-    moodChart.setOption(getNoDataOption());
+    if (moodChart) moodChart.setOption(getNoDataOption());
   } else {
-    moodChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: {
-        trigger: 'item',
-        formatter: function (params) {
-          return `<b>${params.data.name}</b><br/>${params.data.artist}<br/>Valence: ${params.data.value[0]}<br/>Energy: ${params.data.value[1]}`;
+    if (moodChart) {
+      moodChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            return `<b>${params.data.name}</b><br/>${params.data.artist}<br/>Valence: ${params.data.value[0]}<br/>Energy: ${params.data.value[1]}`;
+          },
+          backgroundColor: 'rgba(20, 20, 20, 0.9)',
+          borderColor: '#333',
+          textStyle: { color: '#fff' }
         },
-        backgroundColor: 'rgba(20, 20, 20, 0.9)',
-        borderColor: '#333',
-        textStyle: { color: '#fff' }
-      },
-      grid: { top: 30, right: 30, bottom: 30, left: 40, containLabel: true },
-      xAxis: {
-        name: 'Valence (Happy)',
-        nameLocation: 'middle',
-        nameGap: 25,
-        splitLine: { lineStyle: { color: '#222' } }
-      },
-      yAxis: {
-        name: 'Energy',
-        nameLocation: 'middle',
-        nameGap: 30,
-        splitLine: { lineStyle: { color: '#222' } }
-      },
-      series: [{
-        symbolSize: 8,
-        data: moodData.map(item => ({
-          value: [item.x, item.y],
-          name: item.name,
-          artist: item.artist
-        })),
-        type: 'scatter',
-        itemStyle: {
-          color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
-            { offset: 0, color: '#4ECDC4' },
-            { offset: 1, color: '#1DB954' }
-          ]),
-          shadowBlur: 10,
-          shadowColor: 'rgba(29, 185, 84, 0.5)'
-        }
-      }]
-    });
+        grid: { top: 30, right: 30, bottom: 30, left: 40, containLabel: true },
+        xAxis: {
+          name: 'Valence (Happy)',
+          nameLocation: 'middle',
+          nameGap: 25,
+          splitLine: { lineStyle: { color: '#222' } }
+        },
+        yAxis: {
+          name: 'Energy',
+          nameLocation: 'middle',
+          nameGap: 30,
+          splitLine: { lineStyle: { color: '#222' } }
+        },
+        series: [{
+          symbolSize: 8,
+          data: moodData.map(item => ({
+            value: [item.x, item.y],
+            name: item.name,
+            artist: item.artist
+          })),
+          type: 'scatter',
+          itemStyle: {
+            color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
+              { offset: 0, color: '#4ECDC4' },
+              { offset: 1, color: '#1DB954' }
+            ]),
+            shadowBlur: 10,
+            shadowColor: 'rgba(29, 185, 84, 0.5)'
+          }
+        }]
+      });
+    }
   }
 
   // --- Top Genres (Sunburst) ---
   const genreChart = initChart('genreChart');
   const rawGenreData = {{ top_genres| safe }};
   if (!rawGenreData || rawGenreData.length === 0) {
-    genreChart.setOption(getNoDataOption());
+    if (genreChart) genreChart.setOption(getNoDataOption());
   } else {
     const genreData = rawGenreData.map(g => ({ name: g[0], value: g[1] }));
-    genreChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: { trigger: 'item' },
-      series: {
-        type: 'sunburst',
-        data: genreData,
-        radius: [0, '90%'],
-        label: { rotate: 'radial', color: '#fff' },
-        itemStyle: {
-          borderRadius: 4,
-          borderWidth: 1,
-          borderColor: '#111'
-        },
-        color: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1DB954', '#A8E6CF']
-      }
-    });
+    if (genreChart) {
+      genreChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: { trigger: 'item' },
+        series: {
+          type: 'sunburst',
+          data: genreData,
+          radius: [0, '90%'],
+          label: { rotate: 'radial', color: '#fff' },
+          itemStyle: {
+            borderRadius: 4,
+            borderWidth: 1,
+            borderColor: '#111'
+          },
+          color: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1DB954', '#A8E6CF']
+        }
+      });
+    }
   }
 
   // --- Monthly Activity (Bar) ---
@@ -271,33 +277,35 @@
   const monthlyLabels = {{ monthly_labels| safe }};
   const monthlyValues = {{ monthly_values| safe }};
   if (!monthlyLabels || monthlyLabels.length === 0) {
-    monthlyChart.setOption(getNoDataOption());
+    if (monthlyChart) monthlyChart.setOption(getNoDataOption());
   } else {
-    monthlyChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: { trigger: 'axis' },
-      grid: { top: 20, right: 20, bottom: 20, left: 40, containLabel: true },
-      xAxis: {
-        type: 'category',
-        data: monthlyLabels,
-        axisLine: { lineStyle: { color: '#333' } }
-      },
-      yAxis: {
-        type: 'value',
-        splitLine: { lineStyle: { color: '#222' } }
-      },
-      series: [{
-        data: monthlyValues,
-        type: 'bar',
-        itemStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: '#1DB954' },
-            { offset: 1, color: 'rgba(29, 185, 84, 0.1)' }
-          ]),
-          borderRadius: [4, 4, 0, 0]
-        }
-      }]
-    });
+    if (monthlyChart) {
+      monthlyChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: { trigger: 'axis' },
+        grid: { top: 20, right: 20, bottom: 20, left: 40, containLabel: true },
+        xAxis: {
+          type: 'category',
+          data: monthlyLabels,
+          axisLine: { lineStyle: { color: '#333' } }
+        },
+        yAxis: {
+          type: 'value',
+          splitLine: { lineStyle: { color: '#222' } }
+        },
+        series: [{
+          data: monthlyValues,
+          type: 'bar',
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: '#1DB954' },
+              { offset: 1, color: 'rgba(29, 185, 84, 0.1)' }
+            ]),
+            borderRadius: [4, 4, 0, 0]
+          }
+        }]
+      });
+    }
   }
 
   // --- Audio Features (Radar) ---
@@ -306,28 +314,30 @@
   const avgFeatures = {{ avg_features| safe }};
   // Check if all features are 0 or empty
   if (!avgFeatures || avgFeatures.length === 0 || avgFeatures.every(v => v === 0)) {
-    featuresChart.setOption(getNoDataOption());
+    if (featuresChart) featuresChart.setOption(getNoDataOption());
   } else {
-    featuresChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: {},
-      radar: {
-        indicator: featureLabels.map(f => ({ name: f, max: 1 })),
-        splitArea: { areaStyle: { color: ['transparent'] } },
-        splitLine: { lineStyle: { color: '#333' } },
-        axisLine: { lineStyle: { color: '#333' } }
-      },
-      series: [{
-        type: 'radar',
-        data: [{
-          value: avgFeatures,
-          name: 'Average Profile',
-          areaStyle: { color: 'rgba(78, 205, 196, 0.3)' },
-          lineStyle: { color: '#4ECDC4' },
-          itemStyle: { color: '#4ECDC4' }
+    if (featuresChart) {
+      featuresChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: {},
+        radar: {
+          indicator: featureLabels.map(f => ({ name: f, max: 1 })),
+          splitArea: { areaStyle: { color: ['transparent'] } },
+          splitLine: { lineStyle: { color: '#333' } },
+          axisLine: { lineStyle: { color: '#333' } }
+        },
+        series: [{
+          type: 'radar',
+          data: [{
+            value: avgFeatures,
+            name: 'Average Profile',
+            areaStyle: { color: 'rgba(78, 205, 196, 0.3)' },
+            lineStyle: { color: '#4ECDC4' },
+            itemStyle: { color: '#4ECDC4' }
+          }]
         }]
-      }]
-    });
+      });
+    }
   }
 
   // --- Time of Day (Pie/Nightingale) ---
@@ -336,7 +346,7 @@
   const timeValues = {{ time_of_day_values| safe }};
 
   if (!timeValues || timeValues.every(v => v === 0)) {
-    timeChart.setOption(getNoDataOption());
+    if (timeChart) timeChart.setOption(getNoDataOption());
   } else {
     // Combine labels and values
     const data = timeLabels.map((label, index) => ({
@@ -344,23 +354,25 @@
       value: timeValues[index]
     }));
 
-    timeChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: { trigger: 'item' },
-      series: [{
-        type: 'pie',
-        radius: [20, 80],
-        roseType: 'area',
-        itemStyle: { borderRadius: 5 },
-        data: data.map(item => {
-          let color = '#A8E6CF';
-          if (item.name === 'Morning') color = '#FFE66D';
-          if (item.name === 'Afternoon') color = '#4ECDC4';
-          if (item.name === 'Evening') color = '#FF6B6B';
-          return { ...item, itemStyle: { color: color } };
-        })
-      }]
-    });
+    if (timeChart) {
+      timeChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: { trigger: 'item' },
+        series: [{
+          type: 'pie',
+          radius: [20, 80],
+          roseType: 'area',
+          itemStyle: { borderRadius: 5 },
+          data: data.map(item => {
+            let color = '#A8E6CF';
+            if (item.name === 'Morning') color = '#FFE66D';
+            if (item.name === 'Afternoon') color = '#4ECDC4';
+            if (item.name === 'Evening') color = '#FF6B6B';
+            return { ...item, itemStyle: { color: color } };
+          })
+        }]
+      });
+    }
   }
 
   // --- Eras (Bar) ---
@@ -368,20 +380,22 @@
   const eraLabels = {{ era_labels| safe }};
   const eraValues = {{ era_values| safe }};
   if (!eraLabels || eraLabels.length === 0) {
-    eraChart.setOption(getNoDataOption());
+    if (eraChart) eraChart.setOption(getNoDataOption());
   } else {
-    eraChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: { trigger: 'axis' },
-      grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
-      xAxis: { type: 'category', data: eraLabels },
-      yAxis: { type: 'value', show: false },
-      series: [{
-        data: eraValues,
-        type: 'bar',
-        itemStyle: { color: '#A8E6CF', borderRadius: 4 }
-      }]
-    });
+    if (eraChart) {
+      eraChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: { trigger: 'axis' },
+        grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
+        xAxis: { type: 'category', data: eraLabels },
+        yAxis: { type: 'value', show: false },
+        series: [{
+          data: eraValues,
+          type: 'bar',
+          itemStyle: { color: '#A8E6CF', borderRadius: 4 }
+        }]
+      });
+    }
   }
 
   // --- Popularity (Bar) ---
@@ -389,20 +403,22 @@
   const popLabels = {{ popularity_labels| safe }};
   const popValues = {{ popularity_values| safe }};
   if (!popLabels || popLabels.length === 0) {
-    popularityChart.setOption(getNoDataOption());
+    if (popularityChart) popularityChart.setOption(getNoDataOption());
   } else {
-    popularityChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: { trigger: 'axis' },
-      grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
-      xAxis: { type: 'category', data: popLabels },
-      yAxis: { type: 'value', show: false },
-      series: [{
-        data: popValues,
-        type: 'bar',
-        itemStyle: { color: '#FFE66D', borderRadius: 4 }
-      }]
-    });
+    if (popularityChart) {
+      popularityChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: { trigger: 'axis' },
+        grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
+        xAxis: { type: 'category', data: popLabels },
+        yAxis: { type: 'value', show: false },
+        series: [{
+          data: popValues,
+          type: 'bar',
+          itemStyle: { color: '#FFE66D', borderRadius: 4 }
+        }]
+      });
+    }
   }
 
   // --- Tempo (Bar) ---
@@ -410,22 +426,23 @@
   const tempoLabels = {{ tempo_labels| safe }};
   const tempoValues = {{ tempo_values| safe }};
   if (!tempoLabels || tempoLabels.length === 0) {
-    tempoChart.setOption(getNoDataOption());
+    if (tempoChart) tempoChart.setOption(getNoDataOption());
   } else {
-    tempoChart.setOption({
-      backgroundColor: bgColor,
-      tooltip: { trigger: 'axis' },
-      grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
-      xAxis: { type: 'category', data: tempoLabels },
-      yAxis: { type: 'value', show: false },
-      series: [{
-        data: tempoValues,
-        type: 'bar',
-        itemStyle: { color: '#FF6B6B', borderRadius: 4 }
-      }]
-    });
+    if (tempoChart) {
+      tempoChart.setOption({
+        backgroundColor: bgColor,
+        tooltip: { trigger: 'axis' },
+        grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
+        xAxis: { type: 'category', data: tempoLabels },
+        yAxis: { type: 'value', show: false },
+        series: [{
+          data: tempoValues,
+          type: 'bar',
+          itemStyle: { color: '#FF6B6B', borderRadius: 4 }
+        }]
+      });
+    }
   }
 
 </script>
-
 {% endblock %}
