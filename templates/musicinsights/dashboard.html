@@ -387,14 +387,42 @@
         backgroundColor: bgColor,
         tooltip: {},
         radar: {
-          indicator: featureLabels.map(f => ({ name: f, max: 1 })),
+          center: ['50%', '50%'],
+          radius: '65%',
+          indicator: featureLabels.map((f, i) => ({
+            name: f,
+            max: 1,
+            color: colorPalette[i % colorPalette.length]
+          })),
           splitArea: { areaStyle: { color: ['transparent'] } },
           splitLine: { lineStyle: { color: '#333' } },
           axisLine: { lineStyle: { color: '#333' } },
-          axisName: { color: textColor, fontSize: 13 }
+          axisName: { fontSize: 13 }
+        },
+        polar: {
+          center: ['50%', '50%'],
+          radius: '65%'
+        },
+        angleAxis: {
+          type: 'category',
+          data: featureLabels,
+          boundaryGap: false,
+          splitLine: { show: false },
+          axisLine: { show: false },
+          axisLabel: { show: false },
+          startAngle: 90,
+          clockwise: false
+        },
+        radiusAxis: {
+          min: 0,
+          max: 1,
+          axisLine: { show: false },
+          axisLabel: { show: false },
+          splitLine: { show: false }
         },
         series: [{
           type: 'radar',
+          symbolSize: 0,
           data: [{
             value: avgFeatures,
             name: 'Average Profile',
@@ -402,6 +430,19 @@
             lineStyle: { color: colorPalette[1] },
             itemStyle: { color: colorPalette[1] }
           }]
+        }, {
+          type: 'scatter',
+          coordinateSystem: 'polar',
+          symbolSize: 8,
+          data: avgFeatures.map((val, i) => ({
+            value: [val, i],
+            itemStyle: {
+              color: colorPalette[i % colorPalette.length],
+              borderColor: '#fff',
+              borderWidth: 1
+            }
+          })),
+          z: 10
         }]
       });
     }
