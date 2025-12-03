@@ -56,23 +56,13 @@
   </div>
 
   <!-- Mood Map (Scatter) -->
-  <div class="bento-card col-span-3 row-span-2">
+  <div class="bento-card col-span-4 row-span-2">
     <div class="card-header">
       <span class="card-title"
         ><i class="ph ph-smiley card-icon"></i> Mood Map</span
       >
     </div>
     <div id="moodChart" class="chart-container"></div>
-  </div>
-
-  <!-- Top Genres (Sunburst) -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres</span
-      >
-    </div>
-    <div id="genreChart" class="chart-container"></div>
   </div>
 
   <!-- Top Artists by Duration (Bar) -->
@@ -95,14 +85,14 @@
     <div id="featuresChart" class="chart-container"></div>
   </div>
 
-  <!-- Time of Day -->
+  <!-- Top Genres (Sunburst) -->
   <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
       <span class="card-title"
-        ><i class="ph ph-sun card-icon"></i> Time of Day</span
+        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres</span
       >
     </div>
-    <div id="timeChart" class="chart-container"></div>
+    <div id="genreChart" class="chart-container"></div>
   </div>
 
   <!-- Era Distribution -->
@@ -508,32 +498,42 @@
     }
   }
 
-  // --- Popularity (Bar) ---
+  // --- Popularity (Donut) ---
   const popularityChart = initChart('popularityChart');
   const popLabels = {{ popularity_labels| safe }};
   const popValues = {{ popularity_values| safe }};
   if (!popLabels || popLabels.length === 0) {
     if (popularityChart) popularityChart.setOption(getNoDataOption());
   } else {
+    const popData = popLabels.map((label, i) => ({ name: label, value: popValues[i] }));
     if (popularityChart) {
       popularityChart.setOption({
         backgroundColor: bgColor,
-        tooltip: { trigger: 'axis' },
-        grid: { top: 10, right: 10, bottom: 30, left: 10, containLabel: true },
-        xAxis: { type: 'category', data: popLabels, axisLabel: axisLabelStyle },
-        yAxis: { type: 'value', show: false },
+        tooltip: { trigger: 'item' },
+        legend: { bottom: 0, textStyle: { color: textColor } },
         series: [{
-          data: popValues.map((val, idx) => ({
-            value: val,
-            itemStyle: { color: colorPalette[idx % colorPalette.length], borderRadius: 4 }
-          })),
-          type: 'bar'
+          name: 'Popularity',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: bgColor,
+            borderWidth: 2
+          },
+          label: { show: false, position: 'center' },
+          emphasis: {
+            label: { show: true, fontSize: 20, fontWeight: 'bold', color: '#fff' }
+          },
+          labelLine: { show: false },
+          data: popData,
+          color: colorPalette
         }]
       });
     }
   }
 
-  // --- Tempo (Bar) ---
+  // --- Tempo (Line) ---
   const tempoChart = initChart('tempoChart');
   const tempoLabels = {{ tempo_labels| safe }};
   const tempoValues = {{ tempo_values| safe }};
@@ -544,15 +544,16 @@
       tempoChart.setOption({
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis' },
-        grid: { top: 10, right: 10, bottom: 30, left: 10, containLabel: true },
-        xAxis: { type: 'category', data: tempoLabels, axisLabel: axisLabelStyle },
-        yAxis: { type: 'value', show: false },
+        grid: { top: 20, right: 20, bottom: 30, left: 40, containLabel: true },
+        xAxis: { type: 'category', data: tempoLabels, axisLabel: axisLabelStyle, boundaryGap: false },
+        yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } }, axisLabel: axisLabelStyle },
         series: [{
-          data: tempoValues.map((val, idx) => ({
-            value: val,
-            itemStyle: { color: colorPalette[idx % colorPalette.length], borderRadius: 4 }
-          })),
-          type: 'bar'
+          data: tempoValues,
+          type: 'line',
+          smooth: true,
+          lineStyle: { width: 3, color: colorPalette[3] },
+          itemStyle: { color: colorPalette[3] },
+          symbolSize: 8
         }]
       });
     }
