@@ -126,3 +126,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Spotify Configuration
+SPOTIPY_CLIENT_ID = os.environ.get('SPOTIPY_CLIENT_ID')
+SPOTIPY_CLIENT_SECRET = os.environ.get('SPOTIPY_CLIENT_SECRET')
+
+print(f"DEBUG: Loading Settings. Client ID: {SPOTIPY_CLIENT_ID}, Secret Length: {len(SPOTIPY_CLIENT_SECRET) if SPOTIPY_CLIENT_SECRET else 0}")

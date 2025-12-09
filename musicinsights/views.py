@@ -3,7 +3,19 @@ import uuid
 from datetime import datetime
 from .services.exportify_parser import parse_exportify_csv
 from .services.stats_service import build_dashboard_context
+from django.conf import settings
 from .services.recommendation_service import build_recommendations
+from .services.spotify_service import SpotifyService
+import os
+
+def get_spotify_service(request):
+    # Use server-side credentials
+    client_id = os.environ.get('SPOTIPY_CLIENT_ID')
+    client_secret = os.environ.get('SPOTIPY_CLIENT_SECRET')
+    
+    if client_id and client_secret:
+        return SpotifyService(client_id, client_secret)
+    return None
 
 def upload_file(request):
     if request.method == 'POST' and request.FILES.get('file'):
@@ -71,6 +83,16 @@ def dashboard(request, playlist_id=None):
 
     context = build_dashboard_context(selected_playlist['data'], playlist_name_override=selected_playlist['name'])
     context['recommendations'] = build_recommendations(selected_playlist['data'])
+    
+    # Spotify Recommendations ("Deep Cuts")
+    spotify = get_spotify_service(request)
+    if spotify:
+        context['spotify_recommendations'] = spotify.get_missing_top_tracks(selected_playlist['data'])
+        context['spotify_connected'] = True
+    else:
+        context['spotify_recommendations'] = []
+        context['spotify_connected'] = False
+            
     context['current_playlist_id'] = selected_playlist['id']
     
     return render(request, 'musicinsights/dashboard.html', context)

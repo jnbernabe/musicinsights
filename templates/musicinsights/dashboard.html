@@ -55,6 +55,86 @@
     </ul>
   </div>
 
+  <!-- Spotify Recommendations -->
+  <div class="bento-card col-span-4" style="min-height: auto">
+    <div class="card-header">
+      <span class="card-title">
+        <i class="fab fa-spotify card-icon" style="color: #1db954"></i>
+        Essential Deep Cuts
+      </span>
+      {% if spotify_connected %}
+      <span
+        class="badge"
+        style="
+          background: rgba(29, 185, 84, 0.2);
+          color: #1db954;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.8rem;
+        "
+        >Missing Hits from Your Top Artists</span
+      >
+      {% endif %}
+    </div>
+
+    {% if spotify_connected %} {% if spotify_recommendations %}
+    <div class="recommendations-grid">
+      {% for track in spotify_recommendations %}
+      <a href="{{ track.external_url }}" target="_blank" class="track-card">
+        {% if track.album_art %}
+        <img
+          src="{{ track.album_art }}"
+          alt="{{ track.name }}"
+          class="track-img"
+        />
+        {% else %}
+        <div
+          class="track-img"
+          style="
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <i class="ph ph-music-note"></i>
+        </div>
+        {% endif %}
+        <div class="track-info">
+          <h4>{{ track.name }}</h4>
+          <p style="margin-bottom: 2px">{{ track.artists|join:", " }}</p>
+          <small style="color: #1db954; font-size: 0.75rem"
+            >{{ track.reason }}</small
+          >
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div
+      style="text-align: center; padding: 2rem; color: var(--text-secondary)"
+    >
+      <i
+        class="ph ph-warning-circle"
+        style="font-size: 2rem; margin-bottom: 1rem"
+      ></i>
+      <p>Could not generate recommendations. Ensure you have enough tracks.</p>
+    </div>
+    {% endif %} {% else %}
+    <div style="text-align: center; padding: 3rem 1rem">
+      <i
+        class="fab fa-spotify"
+        style="font-size: 3rem; color: #444; margin-bottom: 1rem"
+      ></i>
+      <h3 style="margin: 0 0 8px 0; color: #666">Service Unavailable</h3>
+      <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto">
+        Spotify integration is not configured on this server. Please contact the
+        administrator to set up API keys.
+      </p>
+    </div>
+    {% endif %}
+  </div>
+
   <!-- Mood Map (Scatter) -->
   <div class="bento-card col-span-4 row-span-2">
     <div class="card-header">
