@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-wc)f7%*b&4djhi%g$i0sjn9g-a5x3722$mqdyoe^ioehp!y59m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['musicinsights.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
