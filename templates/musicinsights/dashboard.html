@@ -1,80 +1,170 @@
-{% extends "base.html" %} {% block content %}
-
-<!-- Header -->
-<div class="dashboard-header">
-  <div class="header-title">
-    <h2>{{ playlist_name }}</h2>
-    <p>Dashboard Overview</p>
-    {% if playlist_vibe %}
-    <div style="margin-top: 5px">
-      <span
-        class="badge"
-        style="
-          background: linear-gradient(45deg, #ff00cc, #333399);
-          color: white;
-          padding: 6px 14px;
-          border-radius: 20px;
-          font-size: 0.9rem;
-          box-shadow: 0 4px 15px rgba(255, 0, 204, 0.4);
-          display: inline-block;
-        "
-      >
-        Vibe: {{ playlist_vibe }}
-      </span>
-    </div>
-    {% endif %}
-  </div>
-  <a href="{% url 'upload_file' %}" class="btn"
-    ><i class="ph ph-upload-simple"></i> Upload New CSV</a
+{% extends "base.html" %} {% block header_content %} {% if playlist_name %}
+<div style="display: flex; align-items: center; gap: 16px">
+  <h2 style="margin: 0; font-size: 1.2rem; font-weight: 600">
+    {{ playlist_name }}
+  </h2>
+  {% if playlist_vibe %}
+  <span
+    class="badge"
+    style="
+      background: linear-gradient(45deg, #ff00cc, #333399);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      box-shadow: 0 2px 10px rgba(255, 0, 204, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    "
   >
+    <i class="ph ph-sparkle"></i> {{ playlist_vibe }}
+  </span>
+  {% endif %}
 </div>
+{% endif %}
+
+<!-- Active Filters in Navbar -->
+<div
+  id="navbar-filters"
+  style="display: flex; align-items: center; gap: 8px; margin-left: 24px"
+></div>
+{% endblock %} {% block content %}
+
+<!-- Tooltip Styles -->
+<style>
+  .info-icon {
+    position: relative;
+    margin-left: 8px;
+    cursor: help;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    vertical-align: middle;
+  }
+  .info-icon:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  .tooltip-text {
+    visibility: hidden;
+    width: 220px;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 9999;
+    top: 120%; /* Show below the icon */
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-family: "Inter", sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: normal;
+    pointer-events: none;
+    border: 1px solid #333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  /* Arrow pointing Up */
+  .tooltip-text::after {
+    content: "";
+    position: absolute;
+    bottom: 100%; /* Arrow at top of tooltip */
+    top: auto;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(20, 20, 20, 0.95) transparent; /* Bottom color visible */
+  }
+</style>
 
 <!-- Bento Grid -->
 <div class="bento-grid">
-  <!-- Hero Stats -->
-  <div class="bento-card col-span-1">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-music-notes card-icon"></i> Playlist Stats</span
-      >
-    </div>
-    <div class="stat-value">{{ total_tracks }}</div>
-    <div class="stat-sub">Total songs in playlist</div>
-
-    <div class="stat-value">{{ total_listening_hours }}</div>
-    <div class="stat-sub">Hours of listening time</div>
-  </div>
-
-  <div class="bento-card col-span-3">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-sparkle card-icon"></i> Insights</span
-      >
-    </div>
-    <ul
+  <!-- Combined Stats & Insights -->
+  <div
+    class="bento-card col-span-1"
+    style="display: flex; flex-direction: row; gap: 24px"
+  >
+    <!-- Stats Section (Left) -->
+    <div
       style="
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        color: var(--text-secondary);
-        font-size: 1.3rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       "
     >
-      {% for rec in recommendations %}
-      <li
-        style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px"
+      <div class="card-header" style="margin-bottom: 0.5rem">
+        <span class="card-title"
+          ><i class="ph ph-music-notes card-icon"></i> Playlist Stats</span
+        >
+      </div>
+
+      <div style="margin-bottom: 1.5rem">
+        <div class="stat-value">{{ total_tracks }}</div>
+        <div class="stat-sub">Total songs in playlist</div>
+      </div>
+
+      <div>
+        <div class="stat-value">{{ total_listening_hours }}</div>
+        <div class="stat-sub">Hours of listening time</div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div
+      style="width: 1px; background: var(--card-border); margin: 10px 0"
+    ></div>
+
+    <!-- Insights Section (Right) -->
+    <div style="flex: 1.5">
+      <div class="card-header" style="margin-bottom: 0.5rem">
+        <span class="card-title"
+          ><i class="ph ph-sparkle card-icon"></i> Insights</span
+        >
+      </div>
+      <ul
+        style="
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          color: var(--text-secondary);
+          font-size: 1rem;
+        "
       >
-        <i class="ph ph-check-circle" style="color: var(--accent-primary)"></i>
-        {{ rec }}
-      </li>
-      {% empty %}
-      <li>No insights available yet.</li>
-      {% endfor %}
-    </ul>
+        {% for insight in text_insights %}
+        <li
+          style="
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+          "
+        >
+          <i
+            class="ph ph-check-circle"
+            style="
+              color: var(--accent-primary);
+              margin-top: 4px;
+              flex-shrink: 0;
+            "
+          ></i>
+          <span style="line-height: 1.4">{{ insight|safe }}</span>
+        </li>
+        {% empty %}
+        <li>No insights available yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
   </div>
 
   <!-- Spotify Recommendations -->
-  <div class="bento-card col-span-4" style="min-height: auto">
+  <div class="bento-card col-span-3" style="min-height: auto">
     <div class="card-header">
       <span class="card-title">
         <i class="fab fa-spotify card-icon" style="color: #1db954"></i>
@@ -97,7 +187,7 @@
 
     {% if spotify_connected %} {% if spotify_recommendations %}
     <div class="recommendations-grid">
-      {% for track in spotify_recommendations %}
+      {% for track in spotify_recommendations%}
       <a href="{{ track.external_url }}" target="_blank" class="track-card">
         {% if track.album_art %}
         <img
@@ -152,43 +242,17 @@
     </div>
     {% endif %}
   </div>
-
-  <!-- Mood Map (Scatter) -->
-  <div class="bento-card col-span-4 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-smiley card-icon"></i> Mood Map</span
-      >
-    </div>
-    <div id="moodChart" class="chart-container"></div>
-  </div>
-
-  <!-- Top Artists by Duration (Bar) -->
-  <div class="bento-card col-span-2 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-clock card-icon"></i> Top Artists by Duration</span
-      >
-    </div>
-    <div id="artistDurationChart" class="chart-container"></div>
-  </div>
-
-  <!-- Audio Features (Radar) -->
-  <div class="bento-card col-span-2 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-faders card-icon"></i> Audio Profile</span
-      >
-    </div>
-    <div id="featuresChart" class="chart-container"></div>
-  </div>
-
   <!-- Top Genres (Sunburst) -->
   <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
       <span class="card-title"
-        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres</span
-      >
+        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Breakdown of the most common genres found in this playlist.</span
+          >
+        </i>
+      </span>
     </div>
     <div id="genreChart" class="chart-container"></div>
   </div>
@@ -197,8 +261,13 @@
   <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
       <span class="card-title"
-        ><i class="ph ph-hourglass card-icon"></i> Eras</span
-      >
+        ><i class="ph ph-hourglass card-icon"></i> Eras
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Distribution of your music across different decades.</span
+          >
+        </i>
+      </span>
     </div>
     <div id="eraChart" class="chart-container"></div>
   </div>
@@ -207,8 +276,14 @@
   <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
       <span class="card-title"
-        ><i class="ph ph-trend-up card-icon"></i> Popularity</span
-      >
+        ><i class="ph ph-trend-up card-icon"></i> Popularity
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >How mainstream (80-100) or obscure (0-20) your music taste
+            is.</span
+          >
+        </i>
+      </span>
     </div>
     <div id="popularityChart" class="chart-container"></div>
   </div>
@@ -217,14 +292,67 @@
   <div class="bento-card col-span-1 row-span-2">
     <div class="card-header">
       <span class="card-title"
-        ><i class="ph ph-metronome card-icon"></i> Tempo</span
-      >
+        ><i class="ph ph-metronome card-icon"></i> Tempo
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >BPM (Beats Per Minute) distribution of your tracks.</span
+          >
+        </i>
+      </span>
     </div>
     <div id="tempoChart" class="chart-container"></div>
   </div>
 
+  <!-- Mood Map (Scatter) -->
+  <div class="bento-card col-span-2 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-smiley card-icon"></i> Mood Map
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Visualizes the emotional landscape based on Energy (Intensity) and
+            Valence (Positivity).</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="moodChart" class="chart-container"></div>
+  </div>
+
+  <!-- Top Artists by Duration (Bar) -->
+  <div class="bento-card col-span-1 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-clock card-icon"></i> Top Artists by Duration
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Ranking of artists by the total time (in minutes) you've spent
+            listening to them.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="artistDurationChart" class="chart-container"></div>
+  </div>
+
+  <!-- Audio Features (Radar) -->
+  <div class="bento-card col-span-1 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-faders card-icon"></i> Audio Profile
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Average acoustic profile showing characteristics like Danceability
+            and Acousticness.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="featuresChart" class="chart-container"></div>
+  </div>
+
   <!-- Top Artists Table -->
-  <div class="bento-card col-span-2">
+  <div class="bento-card col-span-1 row-span-1">
     <div class="card-header">
       <span class="card-title"
         ><i class="ph ph-users card-icon"></i> Top Artists</span
@@ -251,27 +379,41 @@
   </div>
 
   <!-- Top Tracks Table -->
-  <div class="bento-card col-span-2">
+  <div class="bento-card col-span-1 row-span-1">
     <div class="card-header">
       <span class="card-title"
-        ><i class="ph ph-playlist card-icon"></i> Top Tracks</span
+        ><i class="ph ph-playlist card-icon"></i>Tracks</span
       >
     </div>
+
+    <!-- Active Filters Container -->
+    <div
+      id="active-filters"
+      style="
+        padding: 0 1.5rem 1rem 1.5rem;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        min-height: 0;
+      "
+    >
+      <!-- Chips will be injected here by JS -->
+    </div>
+
     <div class="table-container">
       <table>
         <thead>
           <tr>
             <th>Track</th>
             <th>Artist</th>
-            <th>Hours</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="track-table-body">
+          <!-- Initial render from server (SEO/fallback), then JS takes over -->
           {% for t in top_tracks %}
           <tr>
             <td style="font-weight: 500">{{ t.name }}</td>
             <td>{{ t.artist }}</td>
-            <td>{{ t.listening_time_hours }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -337,54 +479,106 @@
     };
   }
 
-  // --- Mood Map (Scatter) ---
+  // --- Mood Map (Heatmap) ---
   const moodChart = initChart('moodChart');
   const moodData = {{ mood_data| safe }};
+
+  // Helper to bin data for heatmap
+  function getHeatmapData(sourceData) {
+      // Grid: 10x10
+      const bins = [];
+      const gridSize = 10;
+      for (let i = 0; i < gridSize; i++) {
+          for (let j = 0; j < gridSize; j++) {
+              bins.push([i, j, 0]); // x, y, count
+          }
+      }
+
+      sourceData.forEach(item => {
+          let v = item.x !== undefined ? item.x : item.valence;
+          let e = item.y !== undefined ? item.y : item.energy;
+
+          if (v !== undefined && e !== undefined) {
+              const xIndex = Math.min(gridSize - 1, Math.floor(v * gridSize));
+              const yIndex = Math.min(gridSize - 1, Math.floor(e * gridSize));
+              const binIndex = xIndex * gridSize + yIndex;
+              if (bins[binIndex]) bins[binIndex][2]++;
+          }
+      });
+      return bins.filter(b => b[2] > 0);
+  }
+
   if (!moodData || moodData.length === 0) {
     if (moodChart) moodChart.setOption(getNoDataOption());
   } else {
+    // Initial Data
+    const heatmapData = getHeatmapData(moodData);
+    const maxCount = Math.max(...heatmapData.map(d => d[2]));
+
+    // Generate Axes Labels (0.00, 0.10, ... 0.90)
+    const axisLabels = [];
+    for(let i=0; i<10; i++) axisLabels.push((i * 0.1).toFixed(1));
+
     if (moodChart) {
       moodChart.setOption({
         backgroundColor: bgColor,
         tooltip: {
-          trigger: 'item',
+          position: 'top',
           formatter: function (params) {
-            return `<b>${params.data.name}</b><br/>${params.data.artist}<br/>Valence: ${params.data.value[0]}<br/>Energy: ${params.data.value[1]}`;
+            return `Valence: ${(params.value[0] * 0.1).toFixed(2)} - ${(params.value[0] * 0.1 + 0.1).toFixed(2)}<br/>` +
+                   `Energy: ${(params.value[1] * 0.1).toFixed(2)} - ${(params.value[1] * 0.1 + 0.1).toFixed(2)}<br/>` +
+                   `Density: <b>${params.value[2]} tracks</b>`;
           },
           backgroundColor: 'rgba(20, 20, 20, 0.9)',
           borderColor: '#333',
           textStyle: { color: '#fff' }
         },
-        grid: { top: 40, right: 30, bottom: 40, left: 50, containLabel: true },
+        grid: { top: 40, right: 60, bottom: 40, left: 60, containLabel: true },
         xAxis: {
+          type: 'category',
+          data: axisLabels,
           name: 'Valence (Happy)',
           nameLocation: 'middle',
           nameGap: 30,
-          nameTextStyle: { color: textColor, fontSize: 14 },
-          splitLine: { lineStyle: { color: '#333' } },
+          nameTextStyle: { color: textColor, fontSize: 13 },
+          splitArea: { show: true, areaStyle: { color: ['rgba(255,255,255,0.02)', 'rgba(255,255,255,0)'] } },
           axisLabel: axisLabelStyle
         },
         yAxis: {
+          type: 'category',
+          data: axisLabels,
           name: 'Energy',
           nameLocation: 'middle',
           nameGap: 40,
-          nameTextStyle: { color: textColor, fontSize: 14 },
-          splitLine: { lineStyle: { color: '#333' } },
+          nameTextStyle: { color: textColor, fontSize: 13 },
+          splitArea: { show: true, areaStyle: { color: ['rgba(255,255,255,0.02)', 'rgba(255,255,255,0)'] } },
           axisLabel: axisLabelStyle
         },
+        visualMap: {
+          min: 0,
+          max: maxCount,
+          calculable: true,
+          orient: 'vertical',
+          right: 0,
+          top: 'center',
+          inRange: {
+            color: ['#2a2a2a', '#2d4b38', '#1db954', '#84bd00'] // Dark to Bright Green
+          },
+          textStyle: { color: textColor }
+        },
         series: [{
-          symbolSize: 8,
-          data: moodData.map((item, index) => ({
-            value: [item.x, item.y],
-            name: item.name,
-            artist: item.artist,
+          type: 'heatmap',
+          data: heatmapData,
+          emphasis: {
             itemStyle: {
-              color: colorPalette[index % colorPalette.length],
               shadowBlur: 10,
-              shadowColor: colorPalette[index % colorPalette.length]
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
-          })),
-          type: 'scatter'
+          },
+          itemStyle: {
+             borderColor: '#111',
+             borderWidth: 1
+          }
         }]
       });
     }
@@ -431,6 +625,10 @@
         grid: { top: 20, right: 30, bottom: 20, left: 120, containLabel: true },
         xAxis: {
           type: 'value',
+          name: 'Minutes',
+          nameLocation: 'middle',
+          nameGap: 30,
+          nameTextStyle: { color: textColor, fontSize: 13 },
           splitLine: { lineStyle: { color: '#333' } },
           axisLabel: axisLabelStyle
         },
@@ -643,18 +841,293 @@
         backgroundColor: bgColor,
         tooltip: { trigger: 'axis' },
         grid: { top: 20, right: 20, bottom: 30, left: 40, containLabel: true },
-        xAxis: { type: 'category', data: tempoLabels, axisLabel: axisLabelStyle, boundaryGap: false },
+        xAxis: { type: 'category', data: tempoLabels, axisLabel: axisLabelStyle }, // Removed boundaryGap: false
         yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } }, axisLabel: axisLabelStyle },
         series: [{
           data: tempoValues,
-          type: 'line',
-          smooth: true,
-          lineStyle: { width: 3, color: colorPalette[3] },
-          itemStyle: { color: colorPalette[3] },
-          symbolSize: 8
+          type: 'bar', // Changed from line to bar
+          itemStyle: {
+              color: colorPalette[3],
+              borderRadius: [4, 4, 0, 0] // Rounded top
+          }
         }]
       });
     }
   }
+  // --- Interactive Filtering Logic ---
+
+  // 1. Data Injection
+  const allTracks = {{ all_tracks_json| safe }};
+  let activeFilters = {
+    era: null,
+    genre: null,
+    popularity: null,
+    tempo: null,
+    timeOfDay: null
+  };
+
+  // 2. Render Functions
+  function renderTable(tracks) {
+      const tbody = document.getElementById('track-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      if (tracks.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; padding: 2rem; color: #888;">No tracks match these filters.</td></tr>';
+          return;
+      }
+
+      // Determine limit: 10 if no filters, 50 if filtered
+      // const hasActiveFilters = Object.values(activeFilters).some(v => v !== null);
+      // const limit = hasActiveFilters ? 50 : 10;
+      // UNLIMITED tracks as requested
+
+      // Show limit tracks
+      tracks.forEach(t => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td style="font-weight: 500">${t.name}</td>
+            <td>${t.artist}</td>
+          `;
+          tbody.appendChild(row);
+      });
+  }
+
+    function updateActiveFiltersDisplay() {
+        const container = document.getElementById('navbar-filters');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        const activeKeys = Object.keys(activeFilters).filter(k => activeFilters[k] !== null);
+
+        // Hide if no filters
+        if (activeKeys.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'flex'; // Show when we have filters
+
+        // divider
+        const divider = document.createElement('div');
+        divider.style.height = '24px';
+        divider.style.width = '1px';
+        divider.style.backgroundColor = 'var(--card-border)';
+        divider.style.marginRight = '12px';
+        container.appendChild(divider);
+
+        activeKeys.forEach(key => {
+            const val = activeFilters[key];
+            const chip = document.createElement('div');
+            chip.className = 'filter-chip';
+            chip.style.cssText = `
+                background: rgba(29, 185, 84, 0.1);
+                border: 1px solid var(--accent-primary);
+                color: var(--accent-primary);
+                padding: 4px 12px;
+                border-radius: 100px;
+                font-size: 0.8rem;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                cursor: pointer;
+            `;
+            chip.innerHTML = `<span>${key}: ${val}</span> <i class="ph ph-x"></i>`;
+            chip.onclick = () => toggleFilter(key, null); // Clear specific filter
+            container.appendChild(chip);
+        });
+
+        // Clear All
+        if (activeKeys.length > 0) { // Changed from > 1 to > 0 to show clear all even with one filter
+            const clearBtn = document.createElement('button');
+            clearBtn.innerText = 'Clear All';
+            clearBtn.style.cssText = `
+                background: transparent;
+                border: none;
+                color: var(--text-muted);
+                font-size: 0.8rem;
+                cursor: pointer;
+                padding: 4px 8px;
+            `;
+            clearBtn.onmouseover = () => clearBtn.style.color = '#fff';
+            clearBtn.onmouseout = () => clearBtn.style.color = 'var(--text-muted)';
+            clearBtn.onclick = () => {
+                activeFilters = { era: null, genre: null, timeOfDay: null, popularity: null, tempo: null };
+                applyFilters();
+            };
+            container.appendChild(clearBtn);
+        }
+    }
+
+  // 3. Filter Logic
+  function applyFilters() {
+      let filtered = allTracks;
+
+      if (activeFilters.era) filtered = filtered.filter(t => t.era === activeFilters.era);
+      if (activeFilters.genre) filtered = filtered.filter(t => t.genres.includes(activeFilters.genre));
+      if (activeFilters.popularity) filtered = filtered.filter(t => t.popularity_bucket === activeFilters.popularity);
+      if (activeFilters.tempo) filtered = filtered.filter(t => t.tempo_bucket === activeFilters.tempo);
+      if (activeFilters.timeOfDay) filtered = filtered.filter(t => t.time_of_day === activeFilters.timeOfDay);
+
+      renderTable(filtered);
+      updateActiveFiltersDisplay();
+      updateCharts(filtered);
+  }
+
+  function toggleFilter(category, value) {
+      if (value === null) {
+          activeFilters[category] = null;
+          applyFilters();
+          return;
+      }
+      if (activeFilters[category] === value) {
+          activeFilters[category] = null;
+      } else {
+          activeFilters[category] = value;
+      }
+      applyFilters();
+  }
+
+  // 4. Client-side Aggregation & Chart Updates
+  function updateCharts(tracks) {
+      if (!tracks) return;
+
+      // -- Era --
+      const eraCounts = {};
+      tracks.forEach(t => { if(t.era) eraCounts[t.era] = (eraCounts[t.era] || 0) + 1; });
+      const sortedEras = Object.keys(eraCounts).sort();
+      if (eraChart) {
+          eraChart.setOption({
+              xAxis: { data: sortedEras },
+              series: [{
+                  data: sortedEras.map((e, i) => ({
+                      value: eraCounts[e],
+                      itemStyle: {
+                          color: colorPalette[i % colorPalette.length],
+                          borderRadius: 4
+                      }
+                  }))
+              }]
+          });
+      }
+
+      // -- Genre --
+      const genreCounts = {};
+      tracks.forEach(t => { t.genres.forEach(g => genreCounts[g] = (genreCounts[g] || 0) + 1); });
+      const sortedGenres = Object.entries(genreCounts).sort((a,b) => b[1] - a[1]).slice(0, 10);
+      if (genreChart) {
+          genreChart.setOption({
+              series: { data: sortedGenres.map(g => ({ name: g[0], value: g[1] })) }
+          });
+      }
+
+      // -- Popularity --
+      const popCounts = {};
+      const popOrder = ['0-20', '21-40', '41-60', '61-80', '81-100'];
+      tracks.forEach(t => { if(t.popularity_bucket) popCounts[t.popularity_bucket] = (popCounts[t.popularity_bucket] || 0) + 1; });
+      if (popularityChart) {
+          const popData = popOrder.filter(k => popCounts[k]).map(k => ({ name: k, value: popCounts[k] }));
+          popularityChart.setOption({ series: [{ data: popData }] });
+      }
+
+      // -- Tempo --
+      const tempoCounts = {};
+      const tempoOrder = ['<80 BPM', '80-100 BPM', '100-120 BPM', '120-140 BPM', '>140 BPM'];
+      tracks.forEach(t => { if(t.tempo_bucket) tempoCounts[t.tempo_bucket] = (tempoCounts[t.tempo_bucket] || 0) + 1; });
+      if (tempoChart) {
+           const tData = tempoOrder.map(k => tempoCounts[k] || 0);
+           tempoChart.setOption({
+               xAxis: { data: tempoOrder },
+               series: [{
+                   type: 'bar',
+                   data: tData,
+                   itemStyle: {
+                       color: colorPalette[3],
+                       borderRadius: [4, 4, 0, 0]
+                   }
+               }]
+           });
+      }
+
+      // -- Time of Day --
+      const timeCounts = {};
+      tracks.forEach(t => { if(t.time_of_day) timeCounts[t.time_of_day] = (timeCounts[t.time_of_day] || 0) + 1; });
+      if (timeChart) {
+          const tLabels = Object.keys(timeCounts);
+          const tData = tLabels.map(l => ({
+              name: l,
+              value: timeCounts[l],
+              itemStyle: { color: l === 'Morning' ? '#FFE66D' : l === 'Afternoon' ? '#4ECDC4' : l === 'Evening' ? '#FF6B6B' : '#A8E6CF' }
+          }));
+          timeChart.setOption({ series: [{ data: tData }] });
+      }
+
+      // -- Audio Features --
+      const features = ['danceability', 'energy', 'valence', 'acousticness', 'instrumentalness', 'liveness', 'speechiness'];
+      const totals = {};
+      features.forEach(f => totals[f] = 0);
+      let count = 0;
+      tracks.forEach(t => {
+          let hasData = false;
+          features.forEach(f => {
+              if (t[f] !== undefined && t[f] !== null) {
+                  totals[f] += t[f];
+                  hasData = true;
+              }
+          });
+          if (hasData) count++;
+      });
+      const avgs = features.map((f) => count ? (totals[f] / count).toFixed(3) : 0);
+
+      if (featuresChart) {
+          featuresChart.setOption({
+              series: [
+                  { data: [{ value: avgs, name: 'Average Profile', areaStyle: { color: colorPalette[1] + '4D' }, lineStyle: { color: colorPalette[1] }, itemStyle: { color: colorPalette[1] } }] },
+                  { data: avgs.map((val, i) => ({ value: [val, i], itemStyle: { color: colorPalette[i % colorPalette.length], borderColor: '#fff', borderWidth: 1 } })) }
+              ]
+          });
+      }
+
+      // -- Mood Map --
+      if (moodChart) {
+          const newData = getHeatmapData(tracks);
+          const newMax = Math.max(...newData.map(d => d[2]));
+
+          moodChart.setOption({
+              visualMap: { max: newMax },
+              series: [{ data: newData }]
+          });
+      }
+
+      // -- Top Artists Duration --
+       const artistDur = {};
+       tracks.forEach(t => {
+           const mainArtist = t.artist.split(',')[0];
+           artistDur[mainArtist] = (artistDur[mainArtist] || 0) + (t.duration_ms || 0);
+       });
+       const sortedArtists = Object.entries(artistDur).sort((a,b) => b[1] - a[1]).slice(0, 10);
+
+       if (artistDurationChart) {
+           artistDurationChart.setOption({
+               yAxis: { data: sortedArtists.map(a => a[0]).reverse() },
+               series: [{ data: sortedArtists.map(a => (a[1] / (1000*60)).toFixed(1)).reverse() }]
+           });
+       }
+  }
+
+  // 4. Attach Handlers to Charts
+  // Ensure charts exist before adding listeners
+  if (eraChart) eraChart.on('click', params => toggleFilter('era', params.name));
+  if (genreChart) genreChart.on('click', params => toggleFilter('genre', params.name));
+  if (popularityChart) popularityChart.on('click', params => toggleFilter('popularity', params.name));
+  if (tempoChart) tempoChart.on('click', params => toggleFilter('tempo', params.name));
+
+  // TimeChart (Pie)
+  // If we used Nightingale/Pie, params.name is the label
+  if (timeChart) timeChart.on('click', params => toggleFilter('timeOfDay', params.name));
+
+  console.log("Interactive Filtering Loaded. Total Tracks:", allTracks.length);
 </script>
 {% endblock %}

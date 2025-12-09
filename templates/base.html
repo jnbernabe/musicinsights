@@ -17,83 +17,82 @@
 
   <body>
     <div class="app-container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="brand">
+      <!-- Top Navbar -->
+      <header class="top-navbar">
+        <a href="/" class="brand">
           <i class="ph ph-music-notes-simple"></i>
           <h1>Music Insights</h1>
-        </div>
-        <nav>
-          <a href="/" class="nav-item active"
-            ><i class="ph ph-squares-four"></i> Dashboard</a
-          >
-          <a href="{% url 'upload_file' %}" class="nav-item"
-            ><i class="ph ph-upload-simple"></i> Upload</a
-          >
-          <a href="#" class="nav-item"><i class="ph ph-gear"></i> Settings</a>
+        </a>
 
-          <div
-            style="
-              margin-top: 2rem;
-              padding-top: 1rem;
-              border-top: 1px solid var(--card-border);
-            "
-          >
-            <p
-              style="
-                color: var(--text-muted);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-bottom: 1rem;
-                padding-left: 1rem;
-              "
-            >
-              History
-            </p>
-            {% for dash in recent_uploads %}
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                margin-bottom: 4px;
-              "
-            >
-              <a
-                href="{% url 'dashboard' dash.id %}"
-                class="nav-item {% if current_playlist_id == dash.id %}active{% endif %}"
-                style="flex: 1; margin-bottom: 0; min-width: 0"
-                title="{{ dash.name }}"
-              >
-                <i class="ph ph-clock-counter-clockwise"></i>
-                <span class="history-item-name" data-name="{{dash.name}}"
-                  >{{dash.name}}</span
-                >
-              </a>
-              <a
-                href="{% url 'delete_history' dash.id %}"
+        <div class="nav-center">
+          {% block header_content %}
+          <!-- Default or Empty if not overridden -->
+          {% endblock %}
+        </div>
+
+        <div class="nav-actions">
+          <!-- History Dropdown -->
+          {% if recent_uploads %}
+          <div class="dropdown">
+            <button class="btn-ghost">
+              <i class="ph ph-clock-counter-clockwise"></i> History
+              <i class="ph ph-caret-down"></i>
+            </button>
+            <div class="dropdown-content">
+              <div
                 style="
-                  padding: 8px;
+                  padding: 4px 12px 8px;
+                  font-size: 0.75rem;
+                  text-transform: uppercase;
                   color: var(--text-muted);
-                  opacity: 0.5;
-                  transition: all 0.2s;
-                  border-radius: 6px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
+                  letter-spacing: 0.05em;
+                  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  margin-bottom: 4px;
                 "
-                onmouseover="this.style.opacity='1'; this.style.color='#ff4444'; this.style.backgroundColor='rgba(255, 68, 68, 0.1)'"
-                onmouseout="this.style.opacity='0.5'; this.style.color='var(--text-muted)'; this.style.backgroundColor='transparent'"
-                title="Delete"
               >
-                <i class="ph ph-trash"></i>
-              </a>
+                Recent Dashboards
+              </div>
+              {% for dash in recent_uploads %}
+              <div style="display: flex; align-items: center; gap: 4px">
+                <a
+                  href="{% url 'dashboard' dash.id %}"
+                  class="history-item {% if current_playlist_id == dash.id %}active{% endif %}"
+                  title="{{ dash.name }}"
+                  style="flex: 1"
+                >
+                  <span class="history-item-name">{{ dash.name }}</span>
+                </a>
+                <a
+                  href="{% url 'delete_history' dash.id %}"
+                  style="
+                    color: var(--text-muted);
+                    padding: 8px;
+                    border-radius: 6px;
+                    transition: all 0.2s;
+                    opacity: 0.5;
+                  "
+                  onmouseover="this.style.opacity='1'; this.style.color='#ff4444'; this.style.backgroundColor='rgba(255, 68, 68, 0.1)'"
+                  onmouseout="this.style.opacity='0.5'; this.style.color='var(--text-muted)'; this.style.backgroundColor='transparent'"
+                  title="Delete"
+                >
+                  <i class="ph ph-trash"></i>
+                </a>
+              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
-        </nav>
-      </aside>
+          {% endif %}
+
+          <!-- Global Actions -->
+          <a
+            href="{% url 'upload_file' %}"
+            class="btn"
+            style="padding: 8px 16px; font-size: 0.85rem"
+          >
+            <i class="ph ph-upload-simple"></i> Upload New CSV
+          </a>
+        </div>
+      </header>
 
       <!-- Main Content -->
       <main class="main-content">{% block content %} {% endblock %}</main>
