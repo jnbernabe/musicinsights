@@ -1,7 +1,8 @@
 :root {
     /* Deep Space Theme */
     --bg-color: #050505;
-    --sidebar-bg: #0a0a0a;
+    /* Deep Space Theme */
+    --bg-color: #050505;
     --card-bg: #111111;
     --card-border: #222222;
 
@@ -69,7 +70,7 @@ body {
 /* Top Navbar */
 .top-navbar {
     height: var(--header-height);
-    background-color: var(--sidebar-bg);
+    background-color: var(--card-bg);
     border-bottom: 1px solid var(--card-border);
     display: flex;
     align-items: center;

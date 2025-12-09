@@ -164,7 +164,7 @@
   </div>
 
   <!-- Spotify Recommendations -->
-  <div class="bento-card col-span-3" style="min-height: auto">
+  <div class="bento-card col-span-2" style="min-height: auto">
     <div class="card-header">
       <span class="card-title">
         <i class="fab fa-spotify card-icon" style="color: #1db954"></i>
@@ -242,143 +242,8 @@
     </div>
     {% endif %}
   </div>
-  <!-- Top Genres (Sunburst) -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >Breakdown of the most common genres found in this playlist.</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="genreChart" class="chart-container"></div>
-  </div>
 
-  <!-- Era Distribution -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-hourglass card-icon"></i> Eras
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >Distribution of your music across different decades.</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="eraChart" class="chart-container"></div>
-  </div>
-
-  <!-- Popularity -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-trend-up card-icon"></i> Popularity
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >How mainstream (80-100) or obscure (0-20) your music taste
-            is.</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="popularityChart" class="chart-container"></div>
-  </div>
-
-  <!-- Tempo -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-metronome card-icon"></i> Tempo
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >BPM (Beats Per Minute) distribution of your tracks.</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="tempoChart" class="chart-container"></div>
-  </div>
-
-  <!-- Mood Map (Scatter) -->
-  <div class="bento-card col-span-2 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-smiley card-icon"></i> Mood Map
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >Visualizes the emotional landscape based on Energy (Intensity) and
-            Valence (Positivity).</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="moodChart" class="chart-container"></div>
-  </div>
-
-  <!-- Top Artists by Duration (Bar) -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-clock card-icon"></i> Top Artists by Duration
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >Ranking of artists by the total time (in minutes) you've spent
-            listening to them.</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="artistDurationChart" class="chart-container"></div>
-  </div>
-
-  <!-- Audio Features (Radar) -->
-  <div class="bento-card col-span-1 row-span-2">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-faders card-icon"></i> Audio Profile
-        <i class="ph ph-info info-icon">
-          <span class="tooltip-text"
-            >Average acoustic profile showing characteristics like Danceability
-            and Acousticness.</span
-          >
-        </i>
-      </span>
-    </div>
-    <div id="featuresChart" class="chart-container"></div>
-  </div>
-
-  <!-- Top Artists Table -->
-  <div class="bento-card col-span-1 row-span-1">
-    <div class="card-header">
-      <span class="card-title"
-        ><i class="ph ph-users card-icon"></i> Top Artists</span
-      >
-    </div>
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Artist</th>
-            <th>Tracks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for name, count in top_artists %}
-          <tr>
-            <td style="font-weight: 500">{{ name }}</td>
-            <td>{{ count }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Top Tracks Table -->
+  <!-- Tracks Table -->
   <div class="bento-card col-span-1 row-span-1">
     <div class="card-header">
       <span class="card-title"
@@ -419,6 +284,138 @@
         </tbody>
       </table>
     </div>
+  </div>
+  <!-- Top Genres (Sunburst) -->
+  <div class="bento-card col-span-1 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-chart-pie-slice card-icon"></i> Genres
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Breakdown of the most common genres found in this playlist.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="genreChart" class="chart-container"></div>
+  </div>
+  <!-- Mood Map (Scatter) -->
+  <div class="bento-card col-span-2 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-smiley card-icon"></i> Mood Map
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Visualizes the emotional landscape based on Energy (Intensity) and
+            Valence (Positivity).</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="moodChart" class="chart-container"></div>
+  </div>
+  <!-- Tempo -->
+  <div class="bento-card col-span-1 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-metronome card-icon"></i> Tempo
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >BPM (Beats Per Minute) distribution of your tracks.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="tempoChart" class="chart-container"></div>
+  </div>
+
+  <!-- Top Artists by Duration (Bar) -->
+  <div class="bento-card col-span-1 row-span-3">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-clock card-icon"></i> Top Artists by Duration
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Ranking of artists by the total time (in minutes) they take on your
+            playlist.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="artistDurationChart" class="chart-container"></div>
+  </div>
+  <!-- Era Distribution -->
+  <div class="bento-card col-span-1 row-span-1">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-hourglass card-icon"></i> Eras
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Distribution of your music across different decades.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="eraChart" class="chart-container"></div>
+  </div>
+
+  <!-- Popularity -->
+  <div class="bento-card col-span-1 row-span-1">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-trend-up card-icon"></i> Popularity
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >How mainstream (80-100) or obscure (0-20) your music taste
+            is.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="popularityChart" class="chart-container"></div>
+  </div>
+
+  <!-- Artists Table -->
+  <div class="bento-card col-span-1 row-span-1">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-users card-icon"></i>Artists</span
+      >
+    </div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Artist</th>
+            <th>Tracks</th>
+          </tr>
+        </thead>
+        <tbody id="top-artists-body">
+          {% for name, count in top_artists %}
+          <tr>
+            <td style="font-weight: 500">{{ name }}</td>
+            <td>{{ count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Audio Features (Radar) -->
+  <div class="bento-card col-span-2 row-span-2">
+    <div class="card-header">
+      <span class="card-title"
+        ><i class="ph ph-faders card-icon"></i> Audio Profile
+        <i class="ph ph-info info-icon">
+          <span class="tooltip-text"
+            >Average acoustic profile showing characteristics like Danceability
+            and Acousticness.</span
+          >
+        </i>
+      </span>
+    </div>
+    <div id="featuresChart" class="chart-container"></div>
   </div>
 </div>
 {% endblock %} {% block scripts %}
@@ -894,6 +891,46 @@
       });
   }
 
+  function renderTopArtists(tracks) {
+      const tbody = document.getElementById('top-artists-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      if (tracks.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; padding: 2rem; color: #888;">No data.</td></tr>';
+          return;
+      }
+
+      // Count artists
+      const artistCounts = {};
+      tracks.forEach(t => {
+          if (t.artist) {
+              // Split by comma and strip whitespace to count individuals
+              const individuals = t.artist.split(',').map(a => a.trim());
+              individuals.forEach(artist => {
+                  if (artist) {
+                      artistCounts[artist] = (artistCounts[artist] || 0) + 1;
+                  }
+              });
+          }
+      });
+
+      // Sort and slice
+      const sortedArtists = Object.entries(artistCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10); // Keep to top 10 for display
+
+      sortedArtists.forEach(([name, count]) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td style="font-weight: 500">${name}</td>
+            <td>${count}</td>
+          `;
+          tbody.appendChild(row);
+      });
+  }
+
     function updateActiveFiltersDisplay() {
         const container = document.getElementById('navbar-filters');
         if (!container) return;
@@ -972,6 +1009,7 @@
       if (activeFilters.timeOfDay) filtered = filtered.filter(t => t.time_of_day === activeFilters.timeOfDay);
 
       renderTable(filtered);
+      renderTopArtists(filtered);
       updateActiveFiltersDisplay();
       updateCharts(filtered);
   }
