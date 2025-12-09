@@ -1,6 +1,7 @@
 services:
   - type: web
     name: musicinsights
+    plan: free
     env: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn musicdata.wsgi:application"
@@ -11,3 +12,5 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+      - key: ALLOWED_HOSTS
+        value: musicinsights.onrender.com
