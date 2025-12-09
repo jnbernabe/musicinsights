@@ -5,6 +5,24 @@
   <div class="header-title">
     <h2>{{ playlist_name }}</h2>
     <p>Dashboard Overview</p>
+    {% if playlist_vibe %}
+    <div style="margin-top: 5px">
+      <span
+        class="badge"
+        style="
+          background: linear-gradient(45deg, #ff00cc, #333399);
+          color: white;
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          box-shadow: 0 4px 15px rgba(255, 0, 204, 0.4);
+          display: inline-block;
+        "
+      >
+        Vibe: {{ playlist_vibe }}
+      </span>
+    </div>
+    {% endif %}
   </div>
   <a href="{% url 'upload_file' %}" class="btn"
     ><i class="ph ph-upload-simple"></i> Upload New CSV</a

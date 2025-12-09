@@ -166,8 +166,12 @@ def build_dashboard_context(playlist_data, playlist_name_override=None):
                  'artist': track['artists'][0] if track['artists'] else 'Unknown'
              })
 
+    # Vibe Calculation
+    vibe = determine_playlist_vibe(avg_features, feature_labels=features)
+
     return {
         "playlist_name": playlist_name,
+        "playlist_vibe": vibe,
         "total_tracks": total_tracks,
         "total_listening_hours": total_listening_hours,
         "top_artists": artist_counter.most_common(10),
@@ -193,3 +197,45 @@ def build_dashboard_context(playlist_data, playlist_name_override=None):
         
         "mood_data": json.dumps(mood_data),
     }
+
+def determine_playlist_vibe(avg_features_values, feature_labels):
+    """
+    Heuristic to determine the 'Vibe' of the playlist based on average audio features.
+    """
+    # Map features to values for easier access
+    feats = dict(zip(feature_labels, avg_features_values))
+    
+    energy = feats.get('energy', 0)
+    valence = feats.get('valence', 0)
+    danceability = feats.get('danceability', 0)
+    acousticness = feats.get('acousticness', 0)
+    tempo = feats.get('tempo', 0) # Note: Average tempo might not be normalized 0-1, usually raw BPM. 
+    # Actually build_context averages raw values. Tempo is commonly 0-200+.
+    # We should handle tempo carefully or ignore it if 'avg_features' includes it as raw number.
+    # Looking at build_dashboard_context, 'tempo' is in features list? 
+    # Yes: features = ['danceability', 'energy', 'valence', 'acousticness', 'instrumentalness', 'liveness', 'speechiness']
+    # Wait, 'tempo' isn't in that list! 
+    # In Step 222: features = ['danceability', 'energy', 'valence', 'acousticness', 'instrumentalness', 'liveness', 'speechiness']
+    # So 'tempo' is NOT in avg_features. Good to know.
+    
+    # Logic Tree
+    if energy > 0.75 and valence > 0.6:
+        return "High Voltage Party ⚡"
+    elif energy > 0.7 and danceability > 0.7:
+        return "Club / Dancefloor 💃"
+    elif energy > 0.8:
+        return "Workout / Pump Up 💪"
+    elif energy < 0.4 and valence < 0.35:
+        return "Melancholy / Sad Boi 🌧️"
+    elif acousticness > 0.7 and energy < 0.5:
+        return "Coffee Shop / Acoustic ☕"
+    elif energy < 0.55 and valence > 0.6:
+        return "Chill / Good Vibes 🌅"
+    elif danceability > 0.75:
+        return "Groovy / Funky 🕺"
+    elif feats.get('instrumentalness', 0) > 0.5:
+        return "Focus / Study 🧠"
+    elif energy > 0.6 and valence < 0.4:
+        return "Moody / Dark 🌑"
+    else:
+        return "Eclectic Mix 🎧"
