@@ -71,6 +71,7 @@ def parse_exportify_csv(file_content, file_name):
                 'album': album_name,
                 'duration_ms': duration_ms,
                 'genres': [g.strip() for g in genres.split(',') if g.strip()],
+                'uri': track_uri,
                 **audio_features
             },
             'added_at': added_at,

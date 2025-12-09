@@ -1,7 +1,8 @@
 :root {
     /* Deep Space Theme */
     --bg-color: #050505;
-    --sidebar-bg: #0a0a0a;
+    /* Deep Space Theme */
+    --bg-color: #050505;
     --card-bg: #111111;
     --card-border: #222222;
 
@@ -40,35 +41,60 @@ body {
     font-size: 18px;
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color); 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333; 
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
 /* App Layout */
 .app-container {
     display: flex;
+    flex-direction: column; /* Changed from row */
     min-height: 100vh;
 }
 
-/* Sidebar */
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--sidebar-bg);
-    border-right: 1px solid var(--card-border);
+/* Top Navbar */
+.top-navbar {
+    height: var(--header-height);
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
     display: flex;
-    flex-direction: column;
-    padding: 2rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
     position: fixed;
-    height: 100vh;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
     box-sizing: border-box;
+    backdrop-filter: blur(10px);
 }
 
 .brand {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 3rem;
     color: var(--accent-primary);
+    text-decoration: none;
 }
 
 .brand i {
-    font-size: 2rem;
+    font-size: 1.8rem;
 }
 
 .brand h1 {
@@ -79,40 +105,119 @@ body {
     letter-spacing: -0.02em;
 }
 
-.nav-item {
+.nav-center {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    gap: 20px;
+    flex: 1;
+    margin-left: 2rem;
 }
 
-.nav-item:hover,
-.nav-item.active {
-    background-color: rgba(255, 255, 255, 0.05);
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0; /* Align to right */
+    top: 100%;
+    background-color: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    min-width: 260px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    border-radius: 12px;
+    z-index: 2000;
+    padding: 8px;
+    margin-top: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Bridge the gap so hover isn't lost */
+/* Bridge the gap using parent pseudo-element so it exists BEFORE hover */
+.dropdown::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 15px; /* Cover the gap + buffer */
+    z-index: 100;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* History Item in Dropdown */
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.05);
     color: #fff;
 }
 
-.nav-item.active {
-    background-color: rgba(29, 185, 84, 0.1);
+.history-item.active {
+    background: rgba(29, 185, 84, 0.1);
     color: var(--accent-primary);
 }
 
-.nav-item i {
-    font-size: 1.2rem;
+.history-item-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-ghost:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.05);
 }
 
 /* Main Content */
 .main-content {
     flex: 1;
-    margin-left: var(--sidebar-width);
+    margin-left: 0;
+    margin-top: var(--header-height); /* Offset for fixed header */
     padding: 2rem;
     width: 100%;
+    box-sizing: border-box;
 }
 
 /* Header Section */
@@ -179,12 +284,12 @@ body {
     box-shadow: var(--shadow-card);
     transition: transform 0.2s ease, border-color 0.2s ease;
     position: relative;
-    overflow: hidden;
 }
 
 .bento-card:hover {
     border-color: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
+    z-index: 100; /* Ensure tooltip renders above other cards */
 }
 
 .card-header {
@@ -238,6 +343,11 @@ body {
 /* Tables */
 .table-container {
     overflow-x: auto;
+    overflow-y: auto;
+    flex: 1; /* Take remaining space in card */
+    min-height: 0; /* Enable internal scrolling in flex item */
+    max-height: 400px; /* Control size to force scrolling */
+    border-radius: 12px;
 }
 
 table {
@@ -452,4 +562,61 @@ tr:last-child td {
     white-space: normal;
     overflow: visible;
     word-break: break-word;
+}
+
+/* Recommendations */
+.recommendations-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 12px; /* Space for scrollbar */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.track-card {
+    min-width: 160px; /* Fixed width for horizontal items */
+    width: 160px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.track-card:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+    border-color: var(--accent-primary);
+}
+
+.track-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.track-info h4 {
+    color: #fff;
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.track-info p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
