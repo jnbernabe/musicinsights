@@ -34,6 +34,13 @@
       style="vertical-align: middle; margin-right: 8px"
     ></i>
     {{ error }}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.trackEvent) {
+          trackEvent("upload_error", { error_message: "{{ error|escapejs }}" });
+        }
+      });
+    </script>
   </div>
   {% endif %}
 
@@ -62,6 +69,7 @@
       href="{% url 'load_dummy_data' %}"
       class="btn-ghost"
       style="font-size: 2rem"
+      onclick="trackEvent('demo_data_load', { 'source': 'upload_page' })"
     >
       <i class="ph ph-lightning"></i> Try Demo Data
     </a>
@@ -111,6 +119,11 @@
   });
 
   function submitForm() {
+    if (window.trackEvent) {
+      trackEvent("file_upload_start", {
+        file_name: fileInput.files[0] ? fileInput.files[0].name : "unknown",
+      });
+    }
     loadingOverlay.classList.add("active");
     uploadForm.submit();
   }

@@ -19,6 +19,16 @@
       gtag("js", new Date());
 
       gtag("config", "{{ GOOGLE_ANALYTICS_ID }}");
+
+      // Custom Event Helper
+      window.trackEvent = function (eventName, params = {}) {
+        if (typeof gtag === "function") {
+          gtag("event", eventName, params);
+          console.log(`[GA] Tracked event: ${eventName}`, params);
+        } else {
+          console.warn("[GA] gtag not defined");
+        }
+      };
     </script>
     {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -81,6 +91,7 @@
                   class="history-item {% if current_playlist_id == dash.id %}active{% endif %}"
                   title="{{ dash.name }}"
                   style="flex: 1"
+                  onclick="trackEvent('history_click', { 'playlist_id': '{{ dash.id }}', 'playlist_name': '{{ dash.name|escapejs }}' })"
                 >
                   <span class="history-item-name">{{ dash.name }}</span>
                 </a>
@@ -96,6 +107,7 @@
                   onmouseover="this.style.opacity='1'; this.style.color='#ff4444'; this.style.backgroundColor='rgba(255, 68, 68, 0.1)'"
                   onmouseout="this.style.opacity='0.5'; this.style.color='var(--text-muted)'; this.style.backgroundColor='transparent'"
                   title="Delete"
+                  onclick="return confirm('Are you sure?') && trackEvent('delete_history', { 'playlist_id': '{{ dash.id }}' })"
                 >
                   <i class="ph ph-trash"></i>
                 </a>

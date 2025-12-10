@@ -420,6 +420,16 @@
 </div>
 {% endblock %} {% block scripts %}
 <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.trackEvent) {
+        trackEvent("dashboard_view", {
+            playlist_name: "{{ playlist_name|escapejs }}",
+            playlist_vibe: "{{ playlist_vibe|escapejs }}",
+            total_tracks: "{{ total_tracks|default:0 }}"
+        });
+    }
+  });
+
   // Initialize ECharts Theme
   const theme = null;
   const bgColor = 'transparent';
