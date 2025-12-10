@@ -5,6 +5,7 @@ services:
     env: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn musicdata.wsgi:application"
+    autoDeploy: true
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -14,3 +15,5 @@ services:
         value: 4
       - key: ALLOWED_HOSTS
         value: musicinsights.onrender.com
+      - key: GOOGLE_ANALYTICS_ID
+        sync: false
