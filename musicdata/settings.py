@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'musicinsights.context_processors.recent_uploads',
+                'musicinsights.context_processors.google_analytics',
             ],
         },
     },
@@ -135,5 +136,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Spotify Configuration
 SPOTIPY_CLIENT_ID = os.environ.get('SPOTIPY_CLIENT_ID')
 SPOTIPY_CLIENT_SECRET = os.environ.get('SPOTIPY_CLIENT_SECRET')
+
+
+# Google Analytics
+GOOGLE_ANALYTICS_ID = os.environ.get('GOOGLE_ANALYTICS_ID')
 
 print(f"DEBUG: Loading Settings. Client ID: {SPOTIPY_CLIENT_ID}, Secret Length: {len(SPOTIPY_CLIENT_SECRET) if SPOTIPY_CLIENT_SECRET else 0}")
