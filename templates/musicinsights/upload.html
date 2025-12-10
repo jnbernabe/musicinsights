@@ -1,11 +1,11 @@
 {% extends "base.html" %} {% block content %}
 <div class="upload-container">
   <div class="header-title" style="margin-bottom: 2rem">
-    <h1 style="font-size: 4rem">Upload Data</h1>
-    <p style="color: var(--text-muted); font-size: 0.9rem">
+    <h1 style="font-size: 6rem">Upload Data</h1>
+    <p style="color: var(--text-muted); font-size: 1.5rem">
       Import your Spotify listening history
     </p>
-    <p style="color: var(--text-muted); font-size: 0.9rem">
+    <p style="color: var(--text-muted); font-size: 1.5rem">
       Supports
       <a
         href="https://exportify.net/"
@@ -56,6 +56,16 @@
       </div>
     </div>
   </form>
+
+  <div style="text-align: center; margin-top: 1.5rem">
+    <a
+      href="{% url 'load_dummy_data' %}"
+      class="btn-ghost"
+      style="font-size: 2rem"
+    >
+      <i class="ph ph-lightning"></i> Try Demo Data
+    </a>
+  </div>
 </div>
 
 <!-- Loading Overlay -->
